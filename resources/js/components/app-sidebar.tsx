@@ -104,7 +104,11 @@ const teacherNavItems: NavItem[] = [
     { title: 'Mi horario', href: teacherSchedule(), icon: CalendarDays },
     { title: 'Tareas y proyectos', href: teacherTasks(), icon: ClipboardList },
     { title: 'Notas', href: grades(), icon: NotebookTabs },
-    { title: 'Reportes de estudiantes', href: studentReports(), icon: HeartPulse },
+    {
+        title: 'Reportes de estudiantes',
+        href: studentReports(),
+        icon: HeartPulse,
+    },
     { title: 'Avisos', href: announcements(), icon: Bell },
 ];
 

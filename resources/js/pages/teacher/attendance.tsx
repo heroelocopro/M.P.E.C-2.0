@@ -144,8 +144,12 @@ export default function TeacherAttendance({
                                     </Button>
                                 </div>
                                 {hasErrors && (
-                                    <div role="alert" className="border-b border-red-500/25 bg-red-500/10 px-5 py-3 text-xs font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300">
-                                        No se pudo guardar. Revisa la fecha, los estados y las observaciones.
+                                    <div
+                                        role="alert"
+                                        className="border-b border-red-500/25 bg-red-500/10 px-5 py-3 text-xs font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300"
+                                    >
+                                        No se pudo guardar. Revisa la fecha, los
+                                        estados y las observaciones.
                                     </div>
                                 )}
                                 <div className="divide-y">

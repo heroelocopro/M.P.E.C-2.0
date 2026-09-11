@@ -24,7 +24,7 @@ test('administrators can inspect period grades', function () {
     [$admin, $student, $period] = createGradeReportWorkspace();
 
     $this->actingAs($admin)->get(route('admin.grades', ['period' => $period->id]))
-        ->assertInertia(fn(Assert $page) => $page
+        ->assertInertia(fn (Assert $page) => $page
             ->component('admin/grades')
             ->where('selected_period_id', $period->id)
             ->has('students', 1)
@@ -88,7 +88,7 @@ test('administrators can save sensitive student data and register qr entry', fun
 
     $studentModel->update(['card_token' => (string) str()->uuid()]);
     $this->actingAs($admin)->get(route('admin.institutional-attendance.scan', $studentModel->card_token))
-        ->assertInertia(fn(Assert $page) => $page
+        ->assertInertia(fn (Assert $page) => $page
             ->component('admin/institutional-attendance')
             ->where('scanned.document', $studentModel->document_number));
 

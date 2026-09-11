@@ -95,7 +95,11 @@ export default function TeachersIndex({
                                     <p className="text-muted-foreground text-xs">
                                         Institucional: {teacher.email}
                                     </p>
-                                    {teacher.personal_email && <p className="text-muted-foreground text-xs">Personal: {teacher.personal_email}</p>}
+                                    {teacher.personal_email && (
+                                        <p className="text-muted-foreground text-xs">
+                                            Personal: {teacher.personal_email}
+                                        </p>
+                                    )}
                                 </div>
                                 <Button
                                     size="sm"
@@ -231,7 +235,9 @@ export default function TeachersIndex({
                         }
                     />
                     {assignmentForm.errors.subject_id && (
-                        <p className="text-destructive text-xs">{assignmentForm.errors.subject_id}</p>
+                        <p className="text-destructive text-xs">
+                            {assignmentForm.errors.subject_id}
+                        </p>
                     )}
                     <Select
                         label="Curso, sede y jornada"
@@ -242,7 +248,9 @@ export default function TeachersIndex({
                         }
                     />
                     {assignmentForm.errors.classroom_id && (
-                        <p className="text-destructive text-xs">{assignmentForm.errors.classroom_id}</p>
+                        <p className="text-destructive text-xs">
+                            {assignmentForm.errors.classroom_id}
+                        </p>
                     )}
                     <DialogFooter>
                         <Button
