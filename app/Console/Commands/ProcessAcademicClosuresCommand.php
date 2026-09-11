@@ -20,7 +20,7 @@ class ProcessAcademicClosuresCommand extends Command
         $date = $this->option('date') ? Carbon::parse((string) $this->option('date')) : null;
         $result = $closures->handle($date);
 
-        $this->info("Recordatorios: {$result['reminders']}; periodos cerrados: {$result['periodsClosed']}; años cerrados: {$result['yearsClosed']}.");
+        $this->info("Recordatorios: {$result['reminders']}; periodos cerrados: {$result['periods_closed']}; años cerrados: {$result['years_closed']}.");
 
         return self::SUCCESS;
     }

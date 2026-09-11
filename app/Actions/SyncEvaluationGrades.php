@@ -19,7 +19,13 @@ class SyncEvaluationGrades
             $assignment = $evaluation->teacherAssignment;
             if ($evaluation->academic_task_id === null) {
                 $periods = AcademicPeriod::query()->where('academic_year_id', $assignment->classroom->academic_year_id)->orderBy('number')->get();
-                $periodId ??= $periods->first(fn ($period): bool => $evaluation->due_at->betweenIncluded($period->starts_at->startOfDay(), $period->ends_at->endOfDay()))?->id ?? $periods->first()?->id;
+                $matchingPeriod = $periods->first(fn (AcademicPeriod $period): bool => $evaluation->due_at->betweenIncluded($period->starts_at->startOfDay(), $period->ends_at->endOfDay()));
+                $fallbackPeriod = $periods->first();
+                if ($periodId === null) {
+                    $periodId = $matchingPeriod instanceof AcademicPeriod
+                        ? $matchingPeriod->id
+                        : ($fallbackPeriod instanceof AcademicPeriod ? $fallbackPeriod->id : null);
+                }
                 $task = AcademicTask::query()->create([
                     'classroom_id' => $assignment->classroom_id,
                     'subject_id' => $assignment->subject_id,

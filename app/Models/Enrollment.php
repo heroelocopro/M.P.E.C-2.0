@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\EnrollmentStatus;
 use Database\Factories\EnrollmentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,9 +19,15 @@ use Illuminate\Support\Carbon;
  * @property Carbon $enrolled_at
  * @property EnrollmentStatus $status
  * @property Carbon|null $completed_at
+ * @property int $academic_year_id
+ * @property int|null $classroom_id
+ * @property string|null $observations
  * @property-read Student $student
  * @property-read AcademicYear $academicYear
  * @property-read Grade $grade
+ * @property-read Classroom|null $classroom
+ * @property-read Collection<int, TaskGrade> $taskGrades
+ * @property-read Collection<int, PeriodFinalGrade> $periodFinalGrades
  */
 #[Fillable(['enrollment_number', 'student_id', 'academic_year_id', 'grade_id', 'classroom_id', 'enrolled_at', 'status', 'observations', 'completed_at'])]
 class Enrollment extends Model
@@ -64,11 +71,13 @@ class Enrollment extends Model
         return $this->hasMany(TaskGrade::class);
     }
 
+    /** @return HasMany<PeriodFinalGrade, $this> */
     public function periodFinalGrades(): HasMany
     {
         return $this->hasMany(PeriodFinalGrade::class);
     }
 
+    /** @return HasOne<AcademicYearResult, $this> */
     public function academicYearResult(): HasOne
     {
         return $this->hasOne(AcademicYearResult::class);

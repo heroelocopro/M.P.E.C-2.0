@@ -33,7 +33,7 @@ class GradeController extends Controller
         return Inertia::render('student/grades', [
             'periods' => $periods->map(fn (AcademicPeriod $item): array => ['id' => $item->id, 'name' => $item->name, 'year' => $item->academicYear->name]),
             'selected_period_id' => $period?->id,
-            'report' => $enrollment && $period ? $this->report($enrollment, $period) : null,
+            'report' => $enrollment !== null ? $this->report($enrollment, $period) : null,
         ]);
     }
 

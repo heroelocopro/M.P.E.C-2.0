@@ -14,6 +14,7 @@ class AcademicPeriodReminder extends Model
     /** @use HasFactory<AcademicPeriodReminderFactory> */
     use HasFactory;
 
+    /** @return BelongsTo<AcademicPeriod, $this> */
     public function academicPeriod(): BelongsTo
     {
         return $this->belongsTo(AcademicPeriod::class);

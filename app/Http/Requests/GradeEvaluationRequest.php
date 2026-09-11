@@ -35,7 +35,12 @@ class GradeEvaluationRequest extends FormRequest
     public function rules(): array
     {
         $scale = GradingScale::current();
-        $indexes = collect($this->route('evaluation')->questions)->keys()->filter(fn ($index) => $this->route('evaluation')->questions[$index]['type'] === 'open')->all();
+        $evaluation = $this->route('evaluation');
+        if (! $evaluation instanceof Evaluation) {
+            return [];
+        }
+
+        $indexes = collect($evaluation->questions)->keys()->filter(fn (int $index): bool => $evaluation->questions[$index]['type'] === 'open')->all();
         $rules = [
             'manual_scores' => ['required', 'array:'.implode(',', $indexes)],
             'feedback' => ['nullable', 'string', 'max:3000'],

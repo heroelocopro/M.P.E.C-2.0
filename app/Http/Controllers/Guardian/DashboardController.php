@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\AcademicPeriod;
 use App\Models\AcademicYear;
 use App\Models\Enrollment;
+use App\Models\Student;
+use App\Models\StudentReport;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Inertia\Inertia;
@@ -35,9 +38,10 @@ class DashboardController extends Controller
             'reports' => fn ($query) => $query->with('reportedBy:id,name')->latest('reported_at')->limit(10),
         ])->get();
 
-        return Inertia::render('guardian/dashboard', ['students' => $students->map(function ($student) use ($periods, $currentPeriod): array {
+        return Inertia::render('guardian/dashboard', ['students' => $students->map(function (Student $student) use ($periods, $currentPeriod): array {
             $enrollment = $student->enrollments->first();
-            $records = $enrollment?->attendanceRecords ?? collect();
+            $records = $enrollment === null ? collect() : $enrollment->attendanceRecords;
+            $pivot = $student->getRelation('pivot');
             $periodAverages = $enrollment
                 ? $periods->mapWithKeys(fn (AcademicPeriod $period): array => [$period->id => $this->periodAverage($enrollment, $period)])
                 : collect();
@@ -48,7 +52,7 @@ class DashboardController extends Controller
                 'name' => $student->user?->name,
                 'email' => $student->user?->email,
                 'document' => $student->document_number,
-                'relationship' => $student->pivot->relationship,
+                'relationship' => $pivot instanceof Pivot ? $pivot->getAttribute('relationship') : null,
                 'course' => $enrollment ? $enrollment->grade->name.' '.$enrollment->classroom?->name : null,
                 'grades' => [
                     'current_period' => $currentPeriod?->name,
@@ -61,7 +65,7 @@ class DashboardController extends Controller
                     'late' => $records->where('status', 'tarde')->count(),
                     'absent' => $records->whereIn('status', ['ausente', 'excusa'])->count(),
                 ],
-                'reports' => $student->reports->map(fn ($report): array => [
+                'reports' => $student->reports->map(fn (StudentReport $report): array => [
                     'id' => $report->id, 'category' => $report->category, 'title' => $report->title,
                     'details' => $report->details, 'author' => $report->reportedBy->name,
                     'reported_at' => $report->reported_at->toIso8601String(),
@@ -73,7 +77,7 @@ class DashboardController extends Controller
     private function periodAverage(Enrollment $enrollment, AcademicPeriod $period): ?float
     {
         $grades = $enrollment->taskGrades->filter(
-            fn ($grade): bool => $grade->academicTask?->academic_period_id === $period->id,
+            fn ($grade): bool => $grade->academicTask->academic_period_id === $period->id,
         );
         $subjectAverages = $grades
             ->groupBy(fn ($grade) => $grade->academicTask->subject_id)

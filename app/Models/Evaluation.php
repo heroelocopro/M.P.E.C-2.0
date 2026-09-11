@@ -8,7 +8,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int|null $academic_task_id
+ * @property string $title
+ * @property string|null $description
+ * @property array<int, array{type: string, prompt: string, options?: array<int, string>, correct?: int}> $questions
+ * @property Carbon $due_at
+ * @property Carbon|null $created_at
+ * @property-read TeacherAssignment $teacherAssignment
+ */
 #[Fillable(['teacher_assignment_id', 'title', 'description', 'questions', 'due_at'])]
 class Evaluation extends Model
 {

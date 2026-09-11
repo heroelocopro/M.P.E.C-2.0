@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $academic_task_id
+ * @property float|string $score
+ * @property-read AcademicTask $academicTask
+ */
 #[Fillable(['academic_task_id', 'enrollment_id', 'graded_by_id', 'score', 'observations'])]
 class TaskGrade extends Model
 {

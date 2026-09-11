@@ -56,7 +56,11 @@ class ProcessAcademicClosures
                 $yearsClosed += $closedYear ? 1 : 0;
             });
 
-        return compact('reminders', 'periodsClosed', 'yearsClosed');
+        return [
+            'reminders' => $reminders,
+            'periods_closed' => $periodsClosed,
+            'years_closed' => $yearsClosed,
+        ];
     }
 
     private function sendReminder(AcademicPeriod $period, int $daysBefore): bool
@@ -151,17 +155,24 @@ class ProcessAcademicClosures
             ->get();
 
         foreach ($enrollments as $enrollment) {
-            $subjects = $enrollment->periodFinalGrades
-                ->groupBy('subject_id')
-                ->map(fn (Collection $grades): array => [
-                    'subject_id' => $grades->first()->subject_id,
-                    'name' => $grades->first()->subject->name,
-                    'score' => round((float) $grades->avg('final_score'), 2),
-                    'periods' => $grades->sortBy(fn ($grade) => $grade->academicPeriod?->number)->map(fn ($grade): array => [
+            $subjectResults = [];
+            foreach ($enrollment->periodFinalGrades->groupBy('subject_id') as $grades) {
+                $firstGrade = $grades->firstOrFail();
+                $periodResults = [];
+                foreach ($grades->sortBy(fn (PeriodFinalGrade $grade): int => $grade->academicPeriod->number) as $grade) {
+                    $periodResults[] = [
                         'period_id' => $grade->academic_period_id,
                         'score' => $grade->final_score,
-                    ])->values()->all(),
-                ])->values();
+                    ];
+                }
+                $subjectResults[] = [
+                    'subject_id' => $firstGrade->subject_id,
+                    'name' => $firstGrade->subject->name,
+                    'score' => round((float) $grades->avg('final_score'), 2),
+                    'periods' => $periodResults,
+                ];
+            }
+            $subjects = collect($subjectResults);
             $average = $subjects->isEmpty() ? null : round((float) $subjects->avg('score'), 2);
             $passed = $average !== null && $average >= $scale->passing;
             $outcome = $passed ? ($enrollment->grade->is_final ? 'graduated' : 'promoted') : ($average === null ? 'no_grades' : 'not_promoted');
@@ -181,6 +192,7 @@ class ProcessAcademicClosures
         $lastPeriod->academicYear()->update(['is_active' => false]);
     }
 
+    /** @param Collection<int, array{subject_id: int, name: string, score: float, periods: list<array{period_id: int, score: float}>}> $subjects */
     private function notifyAnnualResult(Enrollment $enrollment, ?float $average, string $outcome, Collection $subjects, GradingScale $scale, AcademicPeriod $lastPeriod): void
     {
         $congratulations = match ($outcome) {
@@ -226,7 +238,10 @@ class ProcessAcademicClosures
             ->where('status', EnrollmentStatus::Active)
             ->with(['student.user', 'student.guardians'])
             ->get();
-        $studentsAndGuardians = $enrollments->flatMap(fn (Enrollment $enrollment) => collect([$enrollment->student->user])->merge($enrollment->student->guardians));
+        $studentsAndGuardians = $enrollments->flatMap(fn (Enrollment $enrollment): array => [
+            $enrollment->student->user,
+            ...$enrollment->student->guardians->all(),
+        ]);
         $teachers = User::query()->where('role', UserRole::Teacher)->whereHas('teacherAssignments.classroom', fn ($classrooms) => $classrooms->where('academic_year_id', $period->academic_year_id))->get();
         $administrators = User::query()->where('role', UserRole::Administrator)->get();
 

@@ -6,6 +6,7 @@ use App\Enums\DocumentType;
 use App\Enums\StudentStatus;
 use Database\Factories\StudentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,6 +28,9 @@ use Illuminate\Support\Carbon;
  * @property Carbon $birth_date
  * @property StudentStatus $status
  * @property Carbon|null $graduated_at
+ * @property-read User|null $user
+ * @property-read Collection<int, Enrollment> $enrollments
+ * @property-read Collection<int, StudentReport> $reports
  */
 #[Fillable(['user_id', 'card_token', 'document_type', 'document_number', 'first_name', 'middle_name', 'last_name', 'second_last_name', 'birth_date', 'gender', 'phone', 'address', 'status', 'graduated_at'])]
 class Student extends Model

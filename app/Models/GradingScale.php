@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property float $minimum
+ * @property float $maximum
+ * @property float $passing
+ */
 #[Fillable(['minimum', 'maximum', 'passing'])]
 class GradingScale extends Model
 {

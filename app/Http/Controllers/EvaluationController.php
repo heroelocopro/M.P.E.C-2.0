@@ -29,11 +29,11 @@ class EvaluationController extends Controller
     public function grade(GradeEvaluationRequest $request, Evaluation $evaluation, EvaluationAttempt $attempt): RedirectResponse
     {
         $scale = GradingScale::current();
-        $scores = collect($request->validated('manual_scores'))->map(fn ($score): float => $scale->toPercentage((float) $score))->all();
+        $scores = collect($request->array('manual_scores'))->map(fn (mixed $score): float => $scale->toPercentage((float) $score))->all();
         DB::transaction(function () use ($attempt, $scores, $request, $evaluation): void {
             $attempt->update([
                 'manual_scores' => $scores,
-                'feedback' => $request->validated('feedback'),
+                'feedback' => $request->input('feedback'),
                 'score' => round(($attempt->correct_count * 100 + array_sum($scores)) / count($evaluation->questions), 2),
                 'graded_at' => now(),
             ]);
@@ -124,10 +124,10 @@ class EvaluationController extends Controller
             if ($evaluation->attempts()->where('user_id', $request->user()->id)->exists()) {
                 throw ValidationException::withMessages(['answers' => 'Ya enviaste esta evaluación. Solo se permite un intento.']);
             }
-            $answers = $request->validated('answers');
+            $answers = $request->array('answers');
             $correct = 0;
             foreach ($evaluation->questions as $index => $question) {
-                if ($question['type'] === 'choice' && (int) $answers[$index] === (int) $question['correct']) {
+                if ($question['type'] === 'choice' && isset($question['correct']) && (int) $answers[$index] === $question['correct']) {
                     $correct++;
                 }
             }

@@ -82,8 +82,8 @@ La aplicación ofrece espacios separados por rol y usa Laravel con Inertia para 
 ## Instalación local
 
 ```bash
-git clone URL_DEL_REPOSITORIO
-cd NOMBRE_DEL_PROYECTO
+git clone https://github.com/heroelocopro/M.P.E.C-2.0
+cd M.P.E.C-2.0
 composer run setup
 ```
 

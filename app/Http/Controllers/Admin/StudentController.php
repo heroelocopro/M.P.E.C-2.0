@@ -76,7 +76,7 @@ class StudentController extends Controller
                             'subjects' => $subjects->all(),
                             'average' => $subjects->isEmpty() ? null : round((float) $subjects->avg('score'), 2),
                         ];
-                    }),
+                    })->values()->all(),
                 ]),
             ],
         ]);

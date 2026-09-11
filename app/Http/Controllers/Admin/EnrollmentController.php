@@ -52,7 +52,7 @@ class EnrollmentController extends Controller
                 'number' => $enrollment->enrollment_number,
                 'student' => $enrollment->student->user?->name,
                 'document' => $enrollment->student->document_number,
-                'email' => $enrollment->student->user?->personal_email ?? $enrollment->student->user?->email,
+                'email' => $enrollment->student->user?->personal_email ?: $enrollment->student->user?->email,
                 'year' => $enrollment->academicYear->name,
                 'grade' => $enrollment->grade->name,
                 'campus' => $enrollment->classroom?->campus->name,

@@ -14,6 +14,7 @@ class AcademicYearResult extends Model
     /** @use HasFactory<AcademicYearResultFactory> */
     use HasFactory;
 
+    /** @return BelongsTo<Enrollment, $this> */
     public function enrollment(): BelongsTo
     {
         return $this->belongsTo(Enrollment::class);

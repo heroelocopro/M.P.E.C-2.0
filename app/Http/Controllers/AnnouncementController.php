@@ -41,7 +41,7 @@ class AnnouncementController extends Controller
             $query->where(fn (Builder $query) => $query
                 ->where('kind', 'institucional')
                 ->orWhereHas('classrooms', fn (Builder $query) => $query->whereKey($classroomIds)));
-        } elseif ($user->role !== UserRole::Administrator) {
+        } else {
             $query->where('kind', 'institucional');
         }
 

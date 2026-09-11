@@ -28,10 +28,15 @@ class SubmitEvaluationRequest extends FormRequest
      */
     public function rules(): array
     {
+        $evaluation = $this->route('evaluation');
+        if (! $evaluation instanceof Evaluation) {
+            return [];
+        }
+
         $rules = [
-            'answers' => ['required', 'array', 'list', 'size:'.count($this->route('evaluation')->questions)],
+            'answers' => ['required', 'array', 'list', 'size:'.count($evaluation->questions)],
         ];
-        foreach ($this->route('evaluation')->questions as $index => $question) {
+        foreach ($evaluation->questions as $index => $question) {
             $rules['answers.'.$index] = $question['type'] === 'open'
                 ? ['required', 'string', 'max:5000']
                 : ['required', 'integer', 'between:0,3'];
